@@ -43,3 +43,6 @@ def get_infinity(x_vector, y_vector, a):
 
 
     return result
+
+
+#does this change the code in any way?
