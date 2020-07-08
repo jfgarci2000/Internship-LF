@@ -1,7 +1,6 @@
 """
 network.py
 ~~~~~~~~~~
-
 A module to implement the stochastic gradient descent learning
 algorithm for a feedforward neural network.  Gradients are calculated
 using backpropagation.  Note that I have focused on making the code
@@ -9,14 +8,14 @@ simple, easily readable, and easily modifiable.  It is not optimized,
 and omits many desirable features.
 """
 
-# Libraries
+#### Libraries
 # Standard library
 import random
 
 # Third-party libraries
 import numpy as np
-from numpy.core.tests.test_mem_overlap import xrange
-
+import sys
+from tempfile import TemporaryFile
 
 class Network(object):
 
@@ -53,23 +52,25 @@ class Network(object):
         network will be evaluated against the test data after each
         epoch, and partial progress printed out.  This is useful for
         tracking progress, but slows things down substantially."""
-        if test_data:
-            test_data = list(test_data)
-            n_test = len(test_data)
-            training_data = list(training_data)
-            n = len(training_data)
-            for j in xrange(epochs):
-                random.shuffle(training_data)
-                mini_batches = [
-                    training_data[k:k+mini_batch_size]
-                    for k in xrange(0, n, mini_batch_size)]
-                for mini_batch in mini_batches:
-                    self.update_mini_batch(mini_batch, eta)
-                if test_data:
-                    print("Epoch {0}: {1} / {2}".format(
-                        j, self.evaluate(test_data), n_test))
-                else:
-                    print("Epoch {0} complete".format(j))
+        np.set_printoptions(threshold=sys.maxsize)
+        output = TemporaryFile()
+        if test_data: n_test = len(test_data)
+        n = len(training_data)
+        for j in range(epochs):
+            text_file=open('output.txt','a')
+            random.shuffle(training_data)
+            mini_batches = [
+                training_data[k:k+mini_batch_size]
+                for k in range(0, n, mini_batch_size)]
+            for mini_batch in mini_batches:
+                self.update_mini_batch(mini_batch, eta)
+            if test_data:
+                print ("Epoch {0}: {1} / {2}".format(
+                    j, self.evaluate(test_data), n_test))
+            else:
+                print ( "Epoch {0} complete".format(j))
+            np.save('output {}'.format(j), self.weights[0])
+
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
@@ -114,13 +115,13 @@ class Network(object):
         # second-last layer, and so on.  It's a renumbering of the
         # scheme in the book, used here to take advantage of the fact
         # that Python can use negative indices in lists.
-        for l in xrange(2, self.num_layers):
+        for l in range(2, self.num_layers):
             z = zs[-l]
             sp = sigmoid_prime(z)
             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
-        return nabla_b, nabla_w
+        return (nabla_b, nabla_w)
 
     def evaluate(self, test_data):
         """Return the number of test inputs for which the neural
@@ -134,9 +135,9 @@ class Network(object):
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
         \partial a for the output activations."""
-        return output_activations-y
+        return (output_activations-y)
 
-# Miscellaneous functions
+#### Miscellaneous functions
 def sigmoid(z):
     """The sigmoid function."""
     return 1.0/(1.0+np.exp(-z))
@@ -144,3 +145,4 @@ def sigmoid(z):
 def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
+
