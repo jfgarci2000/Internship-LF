@@ -4,7 +4,9 @@ import numpy as np
 
 import scipy.linalg as sp
 import scipy.optimize as so
+import scipy.spatial as ss
 import math
+import scipy.spatial.distance as se
 
 
 def get_t(x_vector, y_vector, a):
@@ -36,13 +38,43 @@ def get_infinity(x_vector, y_vector, a):
     print(bub.shape)
     beq = np.zeros(m)
     v= -np.ones((n,1))
-    aub = np.block([[v, np.eye(n), np.zeros((n,n))], [v, -(np.eye(n)) , np.zeros((n,n))], [v, np.zeros((n, n)), np.eye(n) ], [v, np.zeros((n,n)), -(np.eye(n)) ]])
+    aub = np.block([[v, np.eye(n), np.zeros((n,n))], [v, -(np.eye(n)) , np.zeros((n,n))],
+                    [v, np.zeros((n, n)), np.eye(n) ], [v, np.zeros((n,n)), -(np.eye(n)) ]])
     aeq = np.block([[np.zeros((m,1)), a, -a]])
     result = so.linprog(c, A_ub=aub, b_ub=bub, A_eq=aeq, b_eq=beq, options={"disp":True})
-
-
 
     return result
 
 
-#does this change the code in any way?
+def relu(x_vector, y_vector):
+    if x_vector or y_vector >= 0:
+        line = np.array([1, 1])
+        third_quadx = np.array([1, 0])
+        third_quady = np.array([0, 1])
+        e = (ss.distance.euclidean(x_vector, line)) ^ 2
+        w = (ss.distance.euclidean(x_vector, third_quady)) ^ 2
+        bigx = max(e, w)
+
+        r = (ss.distance.euclidean(y_vector, line)) ^ 2
+        u = (ss.distance.euclidean(y_vector, third_quadx)) ^ 2
+        bigy = max(r, u)
+
+        t = bigx + bigy
+
+        if bigx == e:
+            x_tilda = np.array([(x_vector[0]+x_vector[1])/2, (x_vector[0]+x_vector[1])/2])
+        else:
+            x_tilda = np.array([0, x_vector[1]])
+        if bigy == r:
+            y_tilda = np.array([(y_vector[0]+y_vector[1])/2, (y_vector[0]+y_vector[1])/2])
+        else:
+            y_tilda = np.array([y_vector[0], 0])
+    else:
+        t = 0
+        x_tilda = 0
+        y_tilda = 0
+
+    return x_tilda, y_tilda, t
+
+
+

@@ -12,36 +12,34 @@ training_data, validation_data, test_data = mnist_loader.load_data_wrapper()
 
 v = list(training_data)
 
-print((v[0][1][5][0])==1)
+#print((v[0][1][5][0])==1)
 v0 = [np.reshape(x[0], (784))for x in v if x[1][0][0]==1]
-print(len(v0))
-
+#print(len(v0))
 
 
 v5 = [np.reshape(x[0], (784)) for x in v if x[1][5][0]==1]
-print(len(v5))
+#print(len(v5))
 
 distances = (sp.cdist(v0,v5,'euclidean'))
-
 
 output = 0
 for x in distances:
     for i in x:
         output += i
 output = output/len(v0)/len(v5)
+#print(output)
 
-print(output)
+# for element in v0[]:
+#     for item in v5:
+#         sp.cdist(element, item, 'euclidean')
 
-# for i in distances:
-#     for t in distances[i]:
-#         d = tuple(map(operator.add, distances[i[t]],distances[1[t]]))
-
-
-
+m = np.shape(v0)
+for i in m[1]:
+    v0[:, i]
 
 # x = np.reshape(v[0][0],(784,))
 # y = np.reshape(v[1][0],(784,))
-(t, x1, y1, d1) = (compute_t.get_t(v[0][0], v[1][0], np.identity(784)))
+#(t, x1, y1, d1) = (compute_t.get_t(v[0][0], v[1][0], np.identity(784)))
 
 
 
