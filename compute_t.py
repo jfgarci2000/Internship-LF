@@ -6,7 +6,7 @@ import scipy.linalg as sp
 import scipy.optimize as so
 import scipy.spatial as ss
 import math
-import scipy.spatial.distance as se
+
 
 
 def get_t(x_vector, y_vector, a):
