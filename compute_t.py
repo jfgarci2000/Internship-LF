@@ -4,7 +4,6 @@ import numpy as np
 
 import scipy.linalg as sp
 import scipy.optimize as so
-import scipy.spatial as ss
 import math
 
 
@@ -22,8 +21,6 @@ def get_t(x_vector, y_vector, a):
     return t, x_vector + d, y_vector - d, d
 
 
-x_vector = np.array([0, 1])
-y_vector = np.array([1, 1])
 # A matrix should be invertible (satisfying all the conditions of an invertible matrix)
 a = np.array([[1, 0],
              [0, 1]])
@@ -47,34 +44,51 @@ def get_infinity(x_vector, y_vector, a):
 
 
 def relu(x_vector, y_vector):
-    if x_vector or y_vector >= 0:
-        line = np.array([1, 1])
-        third_quadx = np.array([1, 0])
-        third_quady = np.array([0, 1])
-        e = (ss.distance.euclidean(x_vector, line)) ^ 2
-        w = (ss.distance.euclidean(x_vector, third_quady)) ^ 2
-        bigx = max(e, w)
+    t = 0
+    x_tilda = np.zeros(len(x_vector))
+    y_tilda = np.zeros(len(y_vector))
+    for i in range(len(x_vector)):
+        if x_vector[i] >= 0:
+            if y_vector[i] >= 0:
+                dist = ((x_vector[i] - y_vector[i]) ** 2)/2
+                x_tilda[i] = (x_vector[i] + y_vector[i])/2
+                y_tilda[i] = x_tilda[i]
+                t += dist
 
-        r = (ss.distance.euclidean(y_vector, line)) ^ 2
-        u = (ss.distance.euclidean(y_vector, third_quadx)) ^ 2
-        bigy = max(r, u)
+            else:
+                dist = ((x_vector[i] - y_vector[i]) ** 2) / 2
+                xdist = x_vector[i] ** 2
+                if dist > xdist:
+                    x_tilda[i] = 0
+                    y_tilda[i] = y_vector[i]
+                    t += xdist
 
-        t = bigx + bigy
+                else:
+                    x_tilda[i] = (x_vector[i] + y_vector[i]) / 2
+                    y_tilda[i] = x_tilda[i]
+                    t += dist
 
-        if bigx == e:
-            x_tilda = np.array([(x_vector[0]+x_vector[1])/2, (x_vector[0]+x_vector[1])/2])
         else:
-            x_tilda = np.array([0, x_vector[1]])
-        if bigy == r:
-            y_tilda = np.array([(y_vector[0]+y_vector[1])/2, (y_vector[0]+y_vector[1])/2])
-        else:
-            y_tilda = np.array([y_vector[0], 0])
-    else:
-        t = 0
-        x_tilda = 0
-        y_tilda = 0
+            if y_vector[i] >= 0:
+                dist = ((x_vector[i] - y_vector[i]) ** 2) / 2
+                ydist = y_vector[i] ** 2
+                if dist > ydist:
+                    y_tilda[i] = 0
+                    x_tilda[i] = x_vector[i]
+                    t += ydist
+                else:
+                    x_tilda[i] = (x_vector[i] + y_vector[i]) / 2
+                    y_tilda[i] = x_tilda[i]
+                    t += dist
+
+            else:
+                x_tilda[i] = x_vector[i]
+                y_tilda[i] = y_vector[i]
 
     return x_tilda, y_tilda, t
 
+x_vector = np.array([1, 1, -1, -1, 5, -1])
+y_vector = np.array([1, -1, 1, -1, -1, 5])
 
+print(relu(x_vector, y_vector))
 
