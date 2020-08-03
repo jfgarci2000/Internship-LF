@@ -30,7 +30,7 @@ def get_s(x, y):
                     sarray[k][l][i] = 0
 
 
-    rx = sorted(rx_list, key=lambda x: x[0])
+    rx = sorted(rx_list, key=lambda x:x[0])
     ry = sorted(ry_list, key=lambda x: x[0])
     for k in range(rxlen):
         for j in rx[0:k]:
@@ -40,16 +40,24 @@ def get_s(x, y):
         for j in ry[0:l]:
             for k in range(rxlen):
                 sarray[k][l][j[1]] = 0
-    return  rx, ry, sarray
+    return rx, ry, sarray
 
 
-print(r)
+def get_g(x, y, s):
+    lam = 0.5 + (a_square - b_square)/ (2 * c_square)
+    d_square = max(c_square, a_square - b_square, (b_square - a_square))
+    s = get_s(x, y)[2]
 
-def get_g( x, y, s):
+    if a_square >= (b_square + c_square):
+        t_square = a_square
+    elif b_square >= (a_square + c_square):
+        t_square = b_square
+    elif (((1-lam)**2) * c_square) + a_square == ((lam**2) * c_square) + b_square:
+        t_square = (d_square/4) + (((a_square - b_square)**2) / (4*d_square)) + ((a_square + b_square) / 2)
 
 
 
-def get_h( x, y):
+def get_h(x, y):
     (rx, ry, sarray)=get_s(x, y)
     shape = np.shape(sarray)
     array = np.ndarray(shape[0:1])
